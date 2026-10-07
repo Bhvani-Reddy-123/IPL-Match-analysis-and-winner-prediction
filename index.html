@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL Match Analysis & Winner Prediction ML Platform</title>
+    <meta name="description" content="AI & Machine Learning powered IPL match analytics, win probability predictor, ball-by-ball match simulator, team head-to-head radar breakdown, and AI Captain Strategy assistant.">
+    
+    <!-- External CSS Dependencies -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- External Chart.js and Confetti Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <!-- Header Navigation & Broadcast Branding -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <div class="logo-icon">IPL</div>
+            <div>
+                <h1 class="logo-title">IPL MATCH ANALYTICS & PREDICTOR</h1>
+                <span style="color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.5px;">POWERED BY SCIKIT-LEARN & AI CAPTAIN INTELLIGENCE</span>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab-btn active" data-tab="predictor">
+                🎯 Match Predictor
+            </button>
+            <button class="nav-tab-btn" data-tab="live-simulator">
+                ⚡ Live Match Simulator
+            </button>
+            <button class="nav-tab-btn" data-tab="ai-captain">
+                🤖 AI Captain Strategy
+            </button>
+            <button class="nav-tab-btn" data-tab="head-to-head">
+                ⚔️ Head-to-Head Deep Dive
+            </button>
+            <button class="nav-tab-btn" data-tab="venue-analytics">
+                🏟️ Venue Insights
+            </button>
+            <button class="nav-tab-btn" data-tab="player-matchups">
+                🔥 Player Matchups
+            </button>
+        </div>
+    </nav>
+
+    <!-- Quick Preset Matches Ticker -->
+    <div class="ticker-bar">
+        <span style="color: var(--accent-gold); font-weight: 700; font-size: 0.8rem;">QUICK RIVALRY PRESETS:</span>
+        <div id="preset-matches-list" style="display: flex; gap: 12px;"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="main-container">
+
+        <!-- ===================================================================
+             TAB 1: MATCH PREDICTOR & WINNER FORECAST ENGINE
+             =================================================================== -->
+        <section id="tab-predictor" class="tab-content" style="display: block;">
+            
+            <!-- Matchup Banner Display -->
+            <div class="matchup-banner">
+                <div class="team-card">
+                    <div id="badge-team-a" class="team-badge-circle">CSK</div>
+                    <h2 id="name-team-a" style="font-size: 1.3rem; font-weight: 800;">Chennai Super Kings</h2>
+                </div>
+                
+                <div class="vs-badge">VS</div>
+                
+                <div class="team-card">
+                    <div id="badge-team-b" class="team-badge-circle">MI</div>
+                    <h2 id="name-team-b" style="font-size: 1.3rem; font-weight: 800;">Mumbai Indians</h2>
+                </div>
+            </div>
+
+            <div class="grid-predictor">
+                
+                <!-- Left Column: Match Setup Controls -->
+                <div class="glass-panel" style="padding: 24px;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; color: var(--accent-gold);">
+                        ⚙️ MATCH CONFIGURATOR
+                    </h3>
+
+                    <div class="form-group">
+                        <label class="form-label">Team A (Batting 1st / Selected)</label>
+                        <select id="select-team-a" class="form-select"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Team B (Chasing / Opponent)</label>
+                        <select id="select-team-b" class="form-select"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Venue / Stadium</label>
+                        <select id="select-venue" class="form-select"></select>
+                    </div>
+
+                    <div class="grid-2" style="gap: 12px;">
+                        <div class="form-group">
+                            <label class="form-label">Toss Winner</label>
+                            <select id="select-toss-winner" class="form-select"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Toss Decision</label>
+                            <select id="select-toss-choice" class="form-select">
+                                <option value="chase">Elected to Chase</option>
+                                <option value="bat">Elected to Bat First</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Pitch Condition & Behavior</label>
+                        <select id="select-pitch" class="form-select">
+                            <option value="normal">Normal / Balanced Pitch</option>
+                            <option value="spin">Spin Friendly & Gripping</option>
+                            <option value="pace">Pace, Bounce & Swing</option>
+                            <option value="flat">Flat High-Scoring Belter</option>
+                        </select>
+                    </div>
+
+                    <!-- In-Play Live Match Toggle -->
+                    <div style="margin: 20px 0; padding: 14px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 700;">
+                            <input type="checkbox" id="toggle-live-mode" style="width: 18px; height: 18px; accent-color: var(--accent-gold);">
+                            <span class="badge-live">LIVE</span> In-Play Scenario Simulation
+                        </label>
+                    </div>
+
+                    <div id="live-controls-box" style="display: none; transition: all 0.3s ease;">
+                        <div class="grid-2" style="gap: 12px;">
+                            <div class="form-group">
+                                <label class="form-label">Target Score</label>
+                                <input type="number" id="input-target" class="form-input" value="185">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Current Score</label>
+                                <input type="number" id="input-score" class="form-input" value="110">
+                            </div>
+                        </div>
+
+                        <div class="grid-2" style="gap: 12px;">
+                            <div class="form-group">
+                                <label class="form-label">Overs Bowled</label>
+                                <input type="number" step="0.1" id="input-overs" class="form-input" value="12.0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Wickets Lost</label>
+                                <input type="number" id="input-wickets" class="form-input" value="3" max="9" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Predictive Analytics Dashboard -->
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    
+                    <!-- Probability Arc Chart & Predictions -->
+                    <div class="glass-panel" style="padding: 24px; text-align: center;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span class="badge-gold">ML PREDICTIVE INFERENCE</span>
+                            <span id="val-confidence" style="color: #34d399; font-size: 0.85rem; font-weight: 700;">85% High Confidence</span>
+                        </div>
+
+                        <!-- Gauge Arc Chart Canvas -->
+                        <div class="gauge-wrapper">
+                            <canvas id="winProbCanvas"></canvas>
+                        </div>
+
+                        <!-- Win Percentages Badges -->
+                        <div style="display: flex; justify-content: space-around; margin-top: 16px;">
+                            <div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">TEAM A WIN PROBABILITY</div>
+                                <div id="prob-team-a-val" class="gauge-win-pct" style="color: var(--accent-gold);">55%</div>
+                            </div>
+                            <div style="border-left: 1px solid rgba(255,255,255,0.1);"></div>
+                            <div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">TEAM B WIN PROBABILITY</div>
+                                <div id="prob-team-b-val" class="gauge-win-pct" style="color: var(--accent-cyan);">45%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projected Final Score & Leverage Index -->
+                    <div class="grid-3">
+                        <div class="glass-panel" style="padding: 18px;">
+                            <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700;">PROJECTED SCORE</span>
+                            <div id="val-projected-score" style="font-size: 1.6rem; font-weight: 900; color: #fff; margin: 6px 0;">185 Runs</div>
+                            <div style="font-size: 0.75rem; color: #94a3b8;">Venue pitch distribution.</div>
+                        </div>
+
+                        <div class="glass-panel" style="padding: 18px;">
+                            <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700;">LEVERAGE INDEX (LI)</span>
+                            <div id="val-leverage-index" style="font-size: 1.6rem; font-weight: 900; color: var(--accent-cyan); margin: 6px 0;">1.85 High</div>
+                            <div style="font-size: 0.75rem; color: #94a3b8;">Tension multiplier.</div>
+                        </div>
+
+                        <div class="glass-panel" style="padding: 18px;">
+                            <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700;">MONTE CARLO (500 MOCK)</span>
+                            <div id="mc-sim-result" style="font-size: 1rem; font-weight: 800; color: var(--accent-gold); margin: 6px 0;">
+                                58% vs 42%
+                            </div>
+                            <div style="font-size: 0.75rem; color: #94a3b8;">Random noise model.</div>
+                        </div>
+                    </div>
+
+                    <!-- Key Match Turning Factors -->
+                    <div class="glass-panel" style="padding: 24px;">
+                        <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: #f8fafc;">
+                            🔑 KEY INFLUENCING FACTORS (FEATURE IMPORTANCE)
+                        </h4>
+                        <div id="key-drivers-list"></div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             TAB 2: LIVE BALL-BY-BALL MATCH SIMULATOR & PROBABILITY SWINGS
+             =================================================================== -->
+        <section id="tab-live-simulator" class="tab-content" style="display: none;">
+            <div class="grid-2" style="grid-template-columns: 1fr 420px; gap: 24px;">
+                
+                <!-- Worm & Momentum Line Chart -->
+                <div class="glass-panel" style="padding: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div>
+                            <h3 style="font-size: 1.2rem; font-weight: 800;">⚡ LIVE MATCH MOMENTUM TRACKER</h3>
+                            <p style="color: var(--text-muted); font-size: 0.85rem;">Run Chase Trajectory & Ball Win Probability Swings</p>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button id="btn-sim-play" class="nav-tab-btn active">▶️ Start Live Simulation</button>
+                            <button id="btn-sim-reset" class="nav-tab-btn">🔄 Reset</button>
+                        </div>
+                    </div>
+
+                    <div style="height: 380px; position: relative;">
+                        <canvas id="wormChartCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Match Telemetry Sidebar -->
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <div class="glass-panel" style="padding: 20px; text-align: center;">
+                        <span class="badge-live">LIVE MATCH TELEMETRY</span>
+                        <div id="sim-current-score" style="font-size: 3rem; font-weight: 900; color: var(--accent-gold); font-family: 'Space Grotesk', sans-serif;">0/0</div>
+                        <div id="sim-current-overs" style="color: var(--text-muted); font-weight: 600;">0.0 / 20.0 Overs</div>
+                        <div id="sim-win-swing-badge" style="margin-top: 10px; font-weight: 800; font-size: 0.9rem; color: var(--accent-cyan);">
+                            LIVE PROB: CSK 50.0% (Stable Momentum)
+                        </div>
+                        <div style="margin-top: 6px; font-weight: 700; color: #fff; font-size: 0.85rem;">
+                            Required Run Rate: <span id="sim-rrr" style="color: #ef4444;">9.25</span> RPO
+                        </div>
+                    </div>
+
+                    <!-- Live Commentary Stream -->
+                    <div class="glass-panel" style="padding: 20px;">
+                        <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 14px;">🎙️ LIVE BALL COMMENTARY & PROB SWINGS</h4>
+                        <div id="sim-commentary-list" class="commentary-list">
+                            <div class="commentary-item">Click Start Live Simulation to simulate the chase ball-by-ball!</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             TAB 3: AI CAPTAIN STRATEGY & TACTICAL ASSISTANT
+             =================================================================== -->
+        <section id="tab-ai-captain" class="tab-content" style="display: none;">
+            <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 24px;">
+                
+                <!-- AI Ask Assistant Panel -->
+                <div class="glass-panel" style="padding: 24px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                        <div style="width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #06b6d4, #3b82f6); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; color: #fff;">AI</div>
+                        <div>
+                            <h3 style="font-size: 1.2rem; font-weight: 800; color: #fff;">AI CAPTAIN STRATEGY ASSISTANT</h3>
+                            <p style="color: var(--text-muted); font-size: 0.85rem;">Ask tactical match questions, bowler rotations, & pitch tactics</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Ask Captain AI Question:</label>
+                        <input type="text" id="input-ai-query" class="form-input" placeholder="e.g. Who should bowl the 19th death over against Dhoni?">
+                    </div>
+
+                    <button id="btn-ai-ask" class="btn-primary" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);">
+                        🤖 Ask AI Captain
+                    </button>
+
+                    <div id="ai-response-box" style="margin-top: 16px;">
+                        <div style="padding: 14px; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.9rem; color: #94a3b8;">
+                            Type a question above to receive instant AI tactical recommendations!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Strategic Brief & Impact Player Recommendation -->
+                <div class="glass-panel" style="padding: 24px;">
+                    <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--accent-gold); margin-bottom: 16px;">
+                        📜 AI MATCH EXECUTIVE REPORT
+                    </h3>
+
+                    <div style="padding: 14px; background: rgba(245, 158, 11, 0.1); border-left: 4px solid var(--accent-gold); border-radius: 8px; margin-bottom: 16px;">
+                        <strong style="color: var(--accent-gold);">AI Summary:</strong>
+                        <p style="color: #f8fafc; font-size: 0.9rem; margin-top: 4px;">
+                            ML models project a 55% win likelihood for Team A based on squad spin depth and Wankhede night chase parameters.
+                        </p>
+                    </div>
+
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 10px;">TACTICAL BLUEPRINT RECOMMENDATIONS:</h4>
+                    <ul style="padding-left: 20px; color: #cbd5e1; font-size: 0.9rem; line-height: 1.6;">
+                        <li><strong>Powerplay Attack:</strong> Utilize left-arm seam inswingers in overs 1-4.</li>
+                        <li><strong>Middle Overs Control:</strong> Spinners must target stump-to-stump lines to restrict boundary percentage under 12%.</li>
+                        <li><strong>Impact Player Strategy:</strong> Substitute an extra death bowling specialist in the 14th over for a +6.8% win probability boost.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             TAB 4: HEAD-TO-HEAD MATRIX & RADAR COMPARISON
+             =================================================================== -->
+        <section id="tab-head-to-head" class="tab-content" style="display: none;">
+            <div class="grid-2">
+                <div class="glass-panel" style="padding: 24px;">
+                    <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 16px;">
+                        ⚔️ SQUAD ATTRIBUTE RADAR COMPARISON
+                    </h3>
+                    <div style="height: 380px;">
+                        <canvas id="h2hRadarCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="padding: 24px;">
+                    <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 20px;">
+                        📊 HISTORICAL HEAD-TO-HEAD RECORD
+                    </h3>
+
+                    <div style="display: flex; justify-content: space-around; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 20px;">
+                        <div style="text-align: center;">
+                            <div id="h2h-matches-count" style="font-size: 1.8rem; font-weight: 900; color: var(--accent-gold);">36 Matches</div>
+                            <div style="color: var(--text-muted); font-size: 0.85rem;">TOTAL ENCOUNTERS</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div id="h2h-wins-a" style="font-size: 1.2rem; font-weight: 800; color: #fff;">CSK: 17 Wins</div>
+                            <div id="h2h-wins-b" style="font-size: 1.2rem; font-weight: 800; color: #fff;">MI: 19 Wins</div>
+                        </div>
+                    </div>
+
+                    <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px;">KEY METRIC HEAD-TO-HEAD</h4>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                            <span>Highest Total Scored</span>
+                            <strong>218 vs 219 Runs</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                            <span>Recent 5 Encounters</span>
+                            <span class="badge-gold">CSK - CSK - MI - CSK - MI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             TAB 5: VENUE ANALYTICS & PITCH CONDITIONS
+             =================================================================== -->
+        <section id="tab-venue-analytics" class="tab-content" style="display: none;">
+            <div class="grid-2">
+                <div class="glass-panel" style="padding: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 id="venue-name-title" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-gold);">Wankhede Stadium</h3>
+                        <span id="venue-city" class="badge-gold">Mumbai</span>
+                    </div>
+
+                    <div class="grid-3" style="margin-bottom: 24px;">
+                        <div style="background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; text-align: center;">
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">AVG 1ST INNINGS</div>
+                            <strong id="venue-avg-1st" style="font-size: 1.4rem; color: #fff;">182 Runs</strong>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; text-align: center;">
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">CHASING WIN %</div>
+                            <strong id="venue-chase-pct" style="font-size: 1.4rem; color: #34d399;">54% Win</strong>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; text-align: center;">
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">PITCH TYPE</div>
+                            <strong id="venue-pitch-type" style="font-size: 0.95rem; color: var(--accent-cyan);">Pace & Bounce</strong>
+                        </div>
+                    </div>
+
+                    <div style="height: 280px;">
+                        <canvas id="venueBreakdownCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="pitch-graphic">
+                    <div style="text-align: center; color: #fff; font-weight: 800;">CRICKET PITCH STADIUM VISUALIZER</div>
+                    <div class="pitch-crease">
+                        <span style="background: #000; padding: 4px 12px; border-radius: 4px; font-weight: 700; color: var(--accent-gold);">
+                            22 YARD TURF STRIP
+                        </span>
+                    </div>
+                    <div style="text-align: center; color: #cbd5e1; font-size: 0.85rem;">
+                        Pace vs Spin Wicket Distribution & Dew Factor Analysis
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             TAB 6: PLAYER MATCHUPS & DUELS
+             =================================================================== -->
+        <section id="tab-player-matchups" class="tab-content" style="display: none;">
+            <div style="margin-bottom: 20px;">
+                <h3 style="font-size: 1.3rem; font-weight: 800;">🔥 ICONIC IPL BATTER VS BOWLER DUELS</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Historical head-to-head stats & tactical bowling countermeasures</p>
+            </div>
+
+            <div id="player-matchups-grid" class="grid-2"></div>
+        </section>
+
+    </main>
+
+    <!-- Load Frontend Javascript Modules -->
+    <script src="/js/data.js"></script>
+    <script src="/js/ml-client.js"></script>
+    <script src="/js/charts.js"></script>
+    <script src="/js/app.js"></script>
+
+</body>
+</html>
